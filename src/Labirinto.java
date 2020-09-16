@@ -76,31 +76,34 @@ public class Labirinto {
 
 	private static void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
 
-		int i = 1;
+		int i = 1; //pula primeira linha 
 		int pai;
 		int mae;
 
-		for (int j = 0; j < numMovimentos / (numMovimentos/10); j++) { //numMovimentos/10 avaliar
+		for (int j = 0; j < (numMovimentos/2); j++) { //numMovimentos/10 avaliar
 
 			pai = torneio(populacao, aptidoes);
 			mae = torneio(populacao, aptidoes);
 
 			// System.out.println(pai);
 			// System.out.println(mae);
+		
 
-			for (int coluna = 0; coluna < (numMovimentos / 2) - 1; coluna++) {
+			for (int coluna = 0; coluna < (numMovimentos / 2); coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[pai][coluna];
+				if (i != numMovimentos - 1)
 				populacaoIntermediaria[i + 1][coluna] = populacao[mae][coluna];
 			}
 
 			for (int coluna = numMovimentos / 2; coluna < numMovimentos; coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[mae][coluna];
+				if (i != numMovimentos - 1)
 				populacaoIntermediaria[i + 1][coluna] = populacao[pai][coluna];
 			}
-			//aptidoesIntermediarias[i] = aptidoes[i];
+			//aptidoesIntermediarias[i] = aptidoes[i]; TODO: ver como repassar novas aptidoes
 			i = i + 2;
 		}
-//		System.out.println();
+		System.out.println();
 //		System.out.println("População intermediaria");
 //		printPopulacao(populacaoIntermediaria);
 	}
