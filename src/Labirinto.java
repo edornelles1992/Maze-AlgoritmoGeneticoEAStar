@@ -10,7 +10,7 @@ public class Labirinto {
 	static int[] S = { 11, 11 };
 	static int geracoes = 20;
 	static int numMovimentos = 35;
-	static int melhorValor = 24;
+	static int melhorValor = 22;
 	static int piorValor = 0;
 	static int parede = 1;
 	static int tamanho = 12;
@@ -21,10 +21,32 @@ public class Labirinto {
 		Movimento[][] populacao = new Movimento[numMovimentos][numMovimentos]; 
 		int[] aptidoes = new int[populacao.length];
 		Movimento[][] populacaoIntermediaria = new Movimento[numMovimentos][numMovimentos];
+		int[] aptidoesIntermediarias = new int[populacao.length];
 
 		geraPopulacaoInicial(populacao);
 		atribuiAptidao(populacao, labirinto, aptidoes);
+		atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes, aptidoesIntermediarias);
+	}
 
+	private static void atribuiPrimeiraLinhaPopulacaoIntermediaria(Movimento[][] populacao,
+			Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
+	    int melhorLinha = identificaMelhorLinha(aptidoes);
+	    aptidoesIntermediarias[0] = melhorLinha;
+	    for(int i = 0; i < populacao[0].length; i++) {
+	      populacaoIntermediaria[0][i] = populacao[melhorLinha][i];
+	    }
+		System.out.println();
+		System.out.println("AAAAAAAAAA");
+		printPopulacao(populacaoIntermediaria, aptidoesIntermediarias);
+	}
+
+	private static int identificaMelhorLinha(int[] aptidoes) {
+		int melhorLinha = 0;
+		for (int aptidao : aptidoes) {
+			if (aptidao > melhorLinha)
+				melhorLinha = aptidao;
+		}		
+		return melhorLinha;
 	}
 
 	public static int[][] montarLabirinto() {
