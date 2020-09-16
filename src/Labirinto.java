@@ -23,10 +23,54 @@ public class Labirinto {
 		Movimento[][] populacaoIntermediaria = new Movimento[numMovimentos][numMovimentos];
 		int[] aptidoesIntermediarias = new int[populacao.length];
 
-		geraPopulacaoInicial(populacao);
-		atribuiAptidao(populacao, labirinto, aptidoes);
-		atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes, aptidoesIntermediarias);
-		crossOver(populacao, populacaoIntermediaria, aptidoes);
+		for (int geracao = 0; geracao < 100; geracao++) {
+			System.out.println("Geração: " + geracao);
+
+			geraPopulacaoInicial(populacao);
+			atribuiAptidao(populacao, labirinto, aptidoes);
+			atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes,
+					aptidoesIntermediarias);
+			crossOver(populacao, populacaoIntermediaria, aptidoes);
+
+			if (geracao % 2 == 0) {
+				mutacao(populacaoIntermediaria);
+			}
+
+			populacao = populacaoIntermediaria;
+		}
+	}
+
+	private static void mutacao(Movimento[][] populacaoIntermediaria) {
+		Random rng = new Random();
+		int linha = rng.nextInt(numMovimentos);
+		int coluna = rng.nextInt(numMovimentos);
+
+		System.out.println("Mutacao: " + linha + " " + coluna);
+		Movimento sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+		if (populacaoIntermediaria[linha][coluna] == Movimento.B) {
+			while (sorteado == Movimento.B) {
+				sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+			}
+			populacaoIntermediaria[linha][coluna] = sorteado;
+		}
+		if (populacaoIntermediaria[linha][coluna] == Movimento.C) {
+			while (sorteado == Movimento.C) {
+				sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+			}
+			populacaoIntermediaria[linha][coluna] = sorteado;
+		}
+		if (populacaoIntermediaria[linha][coluna] == Movimento.E) {
+			while (sorteado == Movimento.E) {
+				sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+			}
+			populacaoIntermediaria[linha][coluna] = sorteado;
+		}
+		if (populacaoIntermediaria[linha][coluna] == Movimento.D) {
+			while (sorteado == Movimento.D) {
+				sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+			}
+			populacaoIntermediaria[linha][coluna] = sorteado;
+		}
 	}
 
 	private static void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes) {
@@ -35,7 +79,7 @@ public class Labirinto {
 		int pai;
 		int mae;
 
-		for (int j = 0; j < numMovimentos/2; j++) {
+		for (int j = 0; j < numMovimentos / 2; j++) {
 
 			pai = torneio(populacao, aptidoes);
 			mae = torneio(populacao, aptidoes);
@@ -43,25 +87,26 @@ public class Labirinto {
 			// System.out.println(pai);
 			// System.out.println(mae);
 
-			for (int coluna = 0; coluna < numMovimentos/2; coluna++) {
+			for (int coluna = 0; coluna < numMovimentos / 2; coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[pai][coluna];
 				populacaoIntermediaria[i + 1][coluna] = populacao[mae][coluna];
 			}
 
-			for (int coluna = numMovimentos/2; coluna < numMovimentos; coluna++) {
+			for (int coluna = numMovimentos / 2; coluna < numMovimentos; coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[mae][coluna];
 				populacaoIntermediaria[i + 1][coluna] = populacao[pai][coluna];
 			}
 
 			i = i + 2;
 		}
-		System.out.println();
-		System.out.println("População intermediaria");
-		printPopulacao(populacaoIntermediaria);
+//		System.out.println();
+//		System.out.println("População intermediaria");
+//		printPopulacao(populacaoIntermediaria);
 	}
 
 	/**
-	 * A linha gerada randomicamente é selecionada com base na que teve melhor aptidão
+	 * A linha gerada randomicamente é selecionada com base na que teve melhor
+	 * aptidão
 	 */
 	public static int torneio(Movimento[][] populacao, int[] aptidoes) {
 		Random rng = new Random();
@@ -136,7 +181,7 @@ public class Labirinto {
 
 		}
 	}
-	
+
 	public static void printPopulacao(Movimento[][] populacao) {
 		System.out.println("População gerada:");
 		for (int i = 0; i < populacao.length; i++) {
