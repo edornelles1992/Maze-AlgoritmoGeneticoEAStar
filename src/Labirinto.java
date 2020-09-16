@@ -22,21 +22,22 @@ public class Labirinto {
 		int[] aptidoes = new int[populacao.length];
 		Movimento[][] populacaoIntermediaria = new Movimento[numMovimentos][numMovimentos];
 		int[] aptidoesIntermediarias = new int[populacao.length];
+		geraPopulacaoInicial(populacao);
 
 		for (int geracao = 0; geracao < 100; geracao++) {
 			System.out.println("Geração: " + geracao);
-
-			geraPopulacaoInicial(populacao);
+			
 			atribuiAptidao(populacao, labirinto, aptidoes);
 			atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes,
 					aptidoesIntermediarias);
-			crossOver(populacao, populacaoIntermediaria, aptidoes);
+			crossOver(populacao, populacaoIntermediaria, aptidoes, aptidoesIntermediarias);
 
 			if (geracao % 2 == 0) {
 				mutacao(populacaoIntermediaria);
 			}
 
 			populacao = populacaoIntermediaria;
+			aptidoes = aptidoesIntermediarias;
 		}
 	}
 
@@ -73,13 +74,13 @@ public class Labirinto {
 		}
 	}
 
-	private static void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes) {
+	private static void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
 
-		int i = 0;
+		int i = 1;
 		int pai;
 		int mae;
 
-		for (int j = 0; j < numMovimentos / 2; j++) {
+		for (int j = 0; j < numMovimentos / (numMovimentos/10); j++) { //numMovimentos/10 avaliar
 
 			pai = torneio(populacao, aptidoes);
 			mae = torneio(populacao, aptidoes);
@@ -87,7 +88,7 @@ public class Labirinto {
 			// System.out.println(pai);
 			// System.out.println(mae);
 
-			for (int coluna = 0; coluna < numMovimentos / 2; coluna++) {
+			for (int coluna = 0; coluna < (numMovimentos / 2) - 1; coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[pai][coluna];
 				populacaoIntermediaria[i + 1][coluna] = populacao[mae][coluna];
 			}
@@ -96,7 +97,7 @@ public class Labirinto {
 				populacaoIntermediaria[i][coluna] = populacao[mae][coluna];
 				populacaoIntermediaria[i + 1][coluna] = populacao[pai][coluna];
 			}
-
+			//aptidoesIntermediarias[i] = aptidoes[i];
 			i = i + 2;
 		}
 //		System.out.println();
