@@ -1,5 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
@@ -8,8 +9,8 @@ public class Labirinto {
 
 	static int[] E = { 0, 0 };
 	static int[] S = { 11, 11 };
-	static int geracoes = 20;
-	static int numMovimentos = 40;
+	static int numGeracoes = 10;
+	static int numMovimentos = 120;
 	static int melhorValor = 22;
 	static int piorValor = 0;
 	static int parede = 1;
@@ -24,15 +25,15 @@ public class Labirinto {
 		int[] aptidoesIntermediarias = new int[populacao.length];
 		geraPopulacaoInicial(populacao);
 
-		for (int geracao = 0; geracao < 100; geracao++) {
+		for (int geracao = 0; geracao < numGeracoes; geracao++) {
 			System.out.println("Geração: " + geracao);
-			
+
 			atribuiAptidao(populacao, labirinto, aptidoes);
 			atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes,
 					aptidoesIntermediarias);
 			crossOver(populacao, populacaoIntermediaria, aptidoes, aptidoesIntermediarias);
 
-			if (geracao % 2 == 0) {
+			if (geracao % 5 == 0) {
 				mutacao(populacaoIntermediaria);
 			}
 
@@ -74,33 +75,34 @@ public class Labirinto {
 		}
 	}
 
-	private static void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
+	private static void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes,
+			int[] aptidoesIntermediarias) {
 
-		int i = 1; //pula primeira linha 
+		int i = 1; // pula primeira linha
 		int pai;
 		int mae;
 
-		for (int j = 0; j < (numMovimentos/2); j++) { //numMovimentos/10 avaliar
+		for (int j = 0; j < (numMovimentos / 2); j++) { // numMovimentos/10 avaliar
 
 			pai = torneio(populacao, aptidoes);
 			mae = torneio(populacao, aptidoes);
 
 			// System.out.println(pai);
 			// System.out.println(mae);
-		
 
 			for (int coluna = 0; coluna < (numMovimentos / 2); coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[pai][coluna];
 				if (i != numMovimentos - 1)
-				populacaoIntermediaria[i + 1][coluna] = populacao[mae][coluna];
+					populacaoIntermediaria[i + 1][coluna] = populacao[mae][coluna];
 			}
 
 			for (int coluna = numMovimentos / 2; coluna < numMovimentos; coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[mae][coluna];
 				if (i != numMovimentos - 1)
-				populacaoIntermediaria[i + 1][coluna] = populacao[pai][coluna];
+					populacaoIntermediaria[i + 1][coluna] = populacao[pai][coluna];
 			}
-			//aptidoesIntermediarias[i] = aptidoes[i]; TODO: ver como repassar novas aptidoes
+			// aptidoesIntermediarias[i] = aptidoes[i]; TODO: ver como repassar novas
+			// aptidoes
 			i = i + 2;
 		}
 		System.out.println();
@@ -130,6 +132,7 @@ public class Labirinto {
 		for (int i = 0; i < populacao[0].length; i++) {
 			populacaoIntermediaria[0][i] = populacao[melhorLinha][i];
 		}
+		aptidoes[0] = aptidoes[melhorLinha];
 //		System.out.println();
 //		System.out.println("Iniciado População intermediaria");
 //		printPopulacao(populacaoIntermediaria, aptidoesIntermediarias);
@@ -137,9 +140,9 @@ public class Labirinto {
 
 	private static int identificaMelhorLinha(int[] aptidoes) {
 		int melhorLinha = 0;
-		for (int aptidao : aptidoes) {
-			if (aptidao > melhorLinha)
-				melhorLinha = aptidao;
+		for (int i = 1; i < aptidoes.length; i++) {
+			if (aptidoes[i] > aptidoes[melhorLinha])
+				melhorLinha = i;
 		}
 		return melhorLinha;
 	}
@@ -170,7 +173,6 @@ public class Labirinto {
 	public static void printLabirinto(int[][] labirinto) {
 		System.out.println("Labirinto Carregado:");
 		for (int i = 0; i < labirinto.length; i++) {
-//		      System.out.print(i + " - ");
 			for (int j = 0; j < labirinto[0].length; j++) {
 				System.out.print(labirinto[i][j] + " ");
 			}
@@ -207,45 +209,73 @@ public class Labirinto {
 
 	public static void atribuiAptidao(Movimento[][] populacao, int[][] labirinto, int[] aptidoes) {
 		int[] posicaoAtual = { 0, 0 };// inicio labirinto
+
+		ArrayList<int[]> movimentacao = new ArrayList<>();
+		movimentacao.add(posicaoAtual);
 		for (int i = 0; i < populacao.length; i++) {
 			for (int j = 0; j < populacao.length; j++) {
-				realizaMovimento(posicaoAtual, populacao[i][j], labirinto);
+				boolean ehValido = realizaMovimento(posicaoAtual, populacao[i][j], labirinto);
+				if (ehValido) {
+					movimentacao.add(new int[] { posicaoAtual[0], posicaoAtual[1] });
+					validaResultado(posicaoAtual, movimentacao);
+				}
 			}
 			aptidoes[i] = posicaoAtual[0] + posicaoAtual[1];
+
 			posicaoAtual[0] = 0;
 			posicaoAtual[1] = 0;
 		}
-
 		printPopulacao(populacao, aptidoes);
 	}
 
-	private static void realizaMovimento(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
+	private static void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao) {
+		if (posicaoAtual[0] == 11 && posicaoAtual[1] == 11) {
+			System.out.println("Encontrou a saída do labirinto!");
+
+			for (int i = 1; i < movimentacao.size(); i++) {
+				if (i % 20 == 0)
+					System.out.println(Arrays.toString(movimentacao.get(i)));
+				else
+					System.out.print(Arrays.toString(movimentacao.get(i)));
+			}
+			System.exit(1);
+		}
+
+	}
+
+	private static boolean realizaMovimento(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
 		switch (movimento) {
 		case C: {
 			if (posicaoAtual[0] - 1 >= 0 && labirinto[posicaoAtual[0] - 1][posicaoAtual[1]] != parede) {
 				posicaoAtual[0] = posicaoAtual[0] - 1;
+				return true;
 			}
 		}
 			break;
 		case B: {
 			if (posicaoAtual[0] + 1 < tamanho && labirinto[posicaoAtual[0] + 1][posicaoAtual[1]] != parede) {
 				posicaoAtual[0] = posicaoAtual[0] + 1;
+				return true;
 			}
 		}
 			break;
 		case E: {
 			if (posicaoAtual[1] - 1 >= 0 && labirinto[posicaoAtual[0]][posicaoAtual[1] - 1] != parede) {
 				posicaoAtual[1] = posicaoAtual[1] - 1;
+				return true;
 			}
 		}
 			break;
 		case D: {
 			if (posicaoAtual[1] + 1 < tamanho && labirinto[posicaoAtual[0]][posicaoAtual[1] + 1] != parede) {
 				posicaoAtual[1] = posicaoAtual[1] + 1;
+				return true;
 			}
 		}
 			break;
 		default:
+			return false;
 		}
+		return false;
 	}
 }
