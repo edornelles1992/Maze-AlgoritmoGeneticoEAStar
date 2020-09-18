@@ -1,5 +1,8 @@
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -9,8 +12,8 @@ public class Labirinto {
 
 	static int[] E = { 0, 0 };
 	static int[] S = { 11, 11 };
-	static int numGeracoes = 10;
-	static int numMovimentos = 120;
+	static int numGeracoes = 50000;
+	static int numMovimentos = 150;
 	static int melhorValor = 22;
 	static int piorValor = 0;
 	static int parede = 1;
@@ -40,6 +43,7 @@ public class Labirinto {
 			populacao = populacaoIntermediaria;
 			aptidoes = aptidoesIntermediarias;
 		}
+
 	}
 
 	private static void mutacao(Movimento[][] populacaoIntermediaria) {
@@ -82,13 +86,10 @@ public class Labirinto {
 		int pai;
 		int mae;
 
-		for (int j = 0; j < (numMovimentos / 2); j++) { // numMovimentos/10 avaliar
+		for (int j = 0; j < (numMovimentos / 2); j++) {
 
 			pai = torneio(populacao, aptidoes);
 			mae = torneio(populacao, aptidoes);
-
-			// System.out.println(pai);
-			// System.out.println(mae);
 
 			for (int coluna = 0; coluna < (numMovimentos / 2); coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[pai][coluna];
@@ -101,13 +102,10 @@ public class Labirinto {
 				if (i != numMovimentos - 1)
 					populacaoIntermediaria[i + 1][coluna] = populacao[pai][coluna];
 			}
-			// aptidoesIntermediarias[i] = aptidoes[i]; TODO: ver como repassar novas
-			// aptidoes
+
 			i = i + 2;
 		}
 		System.out.println();
-//		System.out.println("População intermediaria");
-//		printPopulacao(populacaoIntermediaria);
 	}
 
 	/**
@@ -174,7 +172,11 @@ public class Labirinto {
 		System.out.println("Labirinto Carregado:");
 		for (int i = 0; i < labirinto.length; i++) {
 			for (int j = 0; j < labirinto[0].length; j++) {
-				System.out.print(labirinto[i][j] + " ");
+				if (labirinto[i][j] == 2) {
+					System.out.print("x ");
+				} else {
+					System.out.print(labirinto[i][j] + " ");
+				}
 			}
 			System.out.println();
 		}
@@ -217,7 +219,7 @@ public class Labirinto {
 				boolean ehValido = realizaMovimento(posicaoAtual, populacao[i][j], labirinto);
 				if (ehValido) {
 					movimentacao.add(new int[] { posicaoAtual[0], posicaoAtual[1] });
-					validaResultado(posicaoAtual, movimentacao);
+					validaResultado(posicaoAtual, movimentacao, labirinto);
 				}
 			}
 			aptidoes[i] = posicaoAtual[0] + posicaoAtual[1];
@@ -228,7 +230,7 @@ public class Labirinto {
 		printPopulacao(populacao, aptidoes);
 	}
 
-	private static void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao) {
+	private static void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao, int[][] labirinto) {
 		if (posicaoAtual[0] == 11 && posicaoAtual[1] == 11) {
 			System.out.println("Encontrou a saída do labirinto!");
 
@@ -238,9 +240,46 @@ public class Labirinto {
 				else
 					System.out.print(Arrays.toString(movimentacao.get(i)));
 			}
+
+			gravaResultado(movimentacao, labirinto);
 			System.exit(1);
 		}
 
+	}
+
+	private static void gravaResultado(ArrayList<int[]> movimentacao, int[][] labirinto) {
+		int[][] labirintoResultado = labirinto;
+		labirintoResultado[0][0] = 2;
+		for (int i = 0; i < movimentacao.size(); i++) {
+			labirintoResultado[movimentacao.get(i)[0]][movimentacao.get(i)[1]] = 2;
+		}
+
+		System.out.println();
+		System.out.println("Labirinto Resultado!");
+		printLabirinto(labirintoResultado);
+		gravaLabirintoResultado(labirintoResultado);
+	}
+
+	private static void gravaLabirintoResultado(int[][] labirintoResultado) {
+		BufferedWriter buffWrite;
+		try {
+			buffWrite = new BufferedWriter(new FileWriter("resultado.txt"));
+
+			for (int i = 0; i < labirintoResultado.length; i++) {
+				for (int j = 0; j < labirintoResultado.length; j++) {
+					if (labirintoResultado[i][j] == 2) {
+						buffWrite.append("x ");
+					} else
+						buffWrite.append(labirintoResultado[i][j] + " ");
+				}
+				buffWrite.append("\n");
+			}
+
+			buffWrite.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private static boolean realizaMovimento(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
