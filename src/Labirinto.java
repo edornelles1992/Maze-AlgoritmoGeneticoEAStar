@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Labirinto {
 
@@ -232,24 +233,25 @@ public class Labirinto {
 
 	private static void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao, int[][] labirinto) {
 		if (posicaoAtual[0] == 11 && posicaoAtual[1] == 11) {
+			movimentacao.add(0, new int[]{0,0});
 			System.out.println("Encontrou a saída do labirinto!");
-
-			for (int i = 1; i < movimentacao.size(); i++) {
+			
+			
+			for (int i = 0; i < movimentacao.stream().distinct().collect(Collectors.toSet()).size(); i++) {
 				if (i % 20 == 0)
 					System.out.println(Arrays.toString(movimentacao.get(i)));
 				else
 					System.out.print(Arrays.toString(movimentacao.get(i)));
 			}
 
-			gravaResultado(movimentacao, labirinto);
+			guardaResultado(movimentacao, labirinto);
 			System.exit(1);
 		}
 
 	}
 
-	private static void gravaResultado(ArrayList<int[]> movimentacao, int[][] labirinto) {
+	private static void guardaResultado(ArrayList<int[]> movimentacao, int[][] labirinto) {
 		int[][] labirintoResultado = labirinto;
-		labirintoResultado[0][0] = 2;
 		for (int i = 0; i < movimentacao.size(); i++) {
 			labirintoResultado[movimentacao.get(i)[0]][movimentacao.get(i)[1]] = 2;
 		}
