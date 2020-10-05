@@ -13,8 +13,8 @@ public class Labirinto {
 
 	static int[] E = { 0, 0 };
 	static int[] S = { 11, 11 };
-	static int numGeracoes = 50000;
-	static int numMovimentos = 150;
+	static int numGeracoes = 5000000;
+	static int numMovimentos = 50;
 	static int melhorValor = 22;
 	static int piorValor = 0;
 	static int parede = 1;
@@ -37,46 +37,49 @@ public class Labirinto {
 					aptidoesIntermediarias);
 			crossOver(populacao, populacaoIntermediaria, aptidoes, aptidoesIntermediarias);
 
-			if (geracao % 5 == 0) {
-				mutacao(populacaoIntermediaria);
-			}
+			mutacao(populacaoIntermediaria, labirinto);
 
 			populacao = populacaoIntermediaria;
 			aptidoes = aptidoesIntermediarias;
 		}
 
+		System.out.println("Solução final não encontrada para " + numGeracoes + " gerações e " + numMovimentos
+				+ " movimentos por cromossomo");
 	}
 
-	private static void mutacao(Movimento[][] populacaoIntermediaria) {
+	private static void mutacao(Movimento[][] populacaoIntermediaria, int[][] labirinto) {
 		Random rng = new Random();
-		int linha = rng.nextInt(numMovimentos);
-		int coluna = rng.nextInt(numMovimentos);
 
-		System.out.println("Mutacao: " + linha + " " + coluna);
-		Movimento sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
-		if (populacaoIntermediaria[linha][coluna] == Movimento.B) {
-			while (sorteado == Movimento.B) {
-				sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+		for (int i = 0; i < numMovimentos; i++) {
+			int linha = rng.nextInt(((numMovimentos - 1) - 1) + 1) + 1;
+			int coluna = rng.nextInt(numMovimentos);
+
+			Movimento sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+			
+			if (populacaoIntermediaria[linha][coluna] == Movimento.B) {
+				while (sorteado == Movimento.B) {
+					sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+				}
+				populacaoIntermediaria[linha][coluna] = sorteado;
 			}
-			populacaoIntermediaria[linha][coluna] = sorteado;
-		}
-		if (populacaoIntermediaria[linha][coluna] == Movimento.C) {
-			while (sorteado == Movimento.C) {
-				sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+			if (populacaoIntermediaria[linha][coluna] == Movimento.C) {
+				while (sorteado == Movimento.C) {
+					sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+				}
+				populacaoIntermediaria[linha][coluna] = sorteado;
 			}
-			populacaoIntermediaria[linha][coluna] = sorteado;
-		}
-		if (populacaoIntermediaria[linha][coluna] == Movimento.E) {
-			while (sorteado == Movimento.E) {
-				sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+			if (populacaoIntermediaria[linha][coluna] == Movimento.E) {
+				while (sorteado == Movimento.E) {
+					sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+				}
+				populacaoIntermediaria[linha][coluna] = sorteado;
 			}
-			populacaoIntermediaria[linha][coluna] = sorteado;
-		}
-		if (populacaoIntermediaria[linha][coluna] == Movimento.D) {
-			while (sorteado == Movimento.D) {
-				sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+			if (populacaoIntermediaria[linha][coluna] == Movimento.D) {
+				while (sorteado == Movimento.D) {
+					sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
+				}
+				populacaoIntermediaria[linha][coluna] = sorteado;
 			}
-			populacaoIntermediaria[linha][coluna] = sorteado;
 		}
 	}
 
@@ -221,6 +224,8 @@ public class Labirinto {
 				if (ehValido) {
 					movimentacao.add(new int[] { posicaoAtual[0], posicaoAtual[1] });
 					validaResultado(posicaoAtual, movimentacao, labirinto);
+				} else { //armazena movimento invalido para otimizar a mutação
+					
 				}
 			}
 			aptidoes[i] = posicaoAtual[0] + posicaoAtual[1];
@@ -233,10 +238,9 @@ public class Labirinto {
 
 	private static void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao, int[][] labirinto) {
 		if (posicaoAtual[0] == 11 && posicaoAtual[1] == 11) {
-			movimentacao.add(0, new int[]{0,0});
+			movimentacao.add(0, new int[] { 0, 0 });
 			System.out.println("Encontrou a saída do labirinto!");
-			
-			
+
 			for (int i = 0; i < movimentacao.stream().distinct().collect(Collectors.toSet()).size(); i++) {
 				if (i % 20 == 0)
 					System.out.println(Arrays.toString(movimentacao.get(i)));
