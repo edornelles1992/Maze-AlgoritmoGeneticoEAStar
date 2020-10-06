@@ -3,59 +3,37 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class Labirinto {
+public class Genetico {
 
-	static int[] E = { 0, 0 };
-	static int[] S = { 11, 11 };
-	static int numGeracoes = 5000000;
-	static int numMovimentos = 50;
-	static int melhorValor = 22;
-	static int piorValor = 0;
-	static int parede = 1;
-	static int tamanho = 12;
+	int[] E = { 0, 0 };
+	int[] S = { 11, 11 };
+	int numGeracoes = 5000000;
+	int numMovimentos = 100;
+	int melhorValor = 22;
+	int piorValor = 0;
+	int parede = 1;
+	int tamanho = 12;
+	Random rng;
 
-	public static void main(String[] args) {
-
-		int[][] labirinto = montarLabirinto();
-		Movimento[][] populacao = new Movimento[numMovimentos][numMovimentos];
-		int[] aptidoes = new int[populacao.length];
-		Movimento[][] populacaoIntermediaria = new Movimento[numMovimentos][numMovimentos];
-		int[] aptidoesIntermediarias = new int[populacao.length];
-		geraPopulacaoInicial(populacao);
-
-		for (int geracao = 0; geracao < numGeracoes; geracao++) {
-			System.out.println("Geração: " + geracao);
-
-			atribuiAptidao(populacao, labirinto, aptidoes);
-			atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes,
-					aptidoesIntermediarias);
-			crossOver(populacao, populacaoIntermediaria, aptidoes, aptidoesIntermediarias);
-
-			mutacao(populacaoIntermediaria, labirinto);
-
-			populacao = populacaoIntermediaria;
-			aptidoes = aptidoesIntermediarias;
-		}
-
-		System.out.println("Solução final não encontrada para " + numGeracoes + " gerações e " + numMovimentos
-				+ " movimentos por cromossomo");
+	public Genetico(int numGeracoes, int numMovimentos, int parede, int tamanho) {
+		this.numGeracoes = numGeracoes;
+		this.numMovimentos = numMovimentos;
+		this.parede = parede;
+		this.tamanho = tamanho;
+		this.rng = new Random();
 	}
 
-	private static void mutacao(Movimento[][] populacaoIntermediaria, int[][] labirinto) {
-		Random rng = new Random();
+	public void mutacao(Movimento[][] populacaoIntermediaria, int[][] labirinto) {
 
 		for (int i = 0; i < numMovimentos; i++) {
 			int linha = rng.nextInt(((numMovimentos - 1) - 1) + 1) + 1;
 			int coluna = rng.nextInt(numMovimentos);
 
 			Movimento sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
-			
+
 			if (populacaoIntermediaria[linha][coluna] == Movimento.B) {
 				while (sorteado == Movimento.B) {
 					sorteado = Movimento.getMovimentoByValue(rng.nextInt((4 - 1) + 1) + 1);
@@ -83,8 +61,8 @@ public class Labirinto {
 		}
 	}
 
-	private static void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes,
-			int[] aptidoesIntermediarias) {
+	public void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes,
+				   int[] aptidoesIntermediarias) {
 
 		int i = 1; // pula primeira linha
 		int pai;
@@ -113,11 +91,10 @@ public class Labirinto {
 	}
 
 	/**
-	 * A linha gerada randomicamente é selecionada com base na que teve melhor
-	 * aptidão
+	 * A linha gerada randomicamente ï¿½ selecionada com base na que teve melhor
+	 * aptidï¿½o
 	 */
-	public static int torneio(Movimento[][] populacao, int[] aptidoes) {
-		Random rng = new Random();
+	public int torneio(Movimento[][] populacao, int[] aptidoes) {
 		int linhaUm = rng.nextInt(numMovimentos);
 		int linhaDois = rng.nextInt(numMovimentos);
 
@@ -127,8 +104,8 @@ public class Labirinto {
 		return linhaDois;
 	}
 
-	private static void atribuiPrimeiraLinhaPopulacaoIntermediaria(Movimento[][] populacao,
-			Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
+	public void atribuiPrimeiraLinhaPopulacaoIntermediaria(Movimento[][] populacao,
+													Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
 		int melhorLinha = identificaMelhorLinha(aptidoes);
 		aptidoesIntermediarias[0] = melhorLinha;
 		for (int i = 0; i < populacao[0].length; i++) {
@@ -136,11 +113,11 @@ public class Labirinto {
 		}
 		aptidoes[0] = aptidoes[melhorLinha];
 //		System.out.println();
-//		System.out.println("Iniciado População intermediaria");
+//		System.out.println("Iniciado Populaï¿½ï¿½o intermediaria");
 //		printPopulacao(populacaoIntermediaria, aptidoesIntermediarias);
 	}
 
-	private static int identificaMelhorLinha(int[] aptidoes) {
+	private int identificaMelhorLinha(int[] aptidoes) {
 		int melhorLinha = 0;
 		for (int i = 1; i < aptidoes.length; i++) {
 			if (aptidoes[i] > aptidoes[melhorLinha])
@@ -149,7 +126,7 @@ public class Labirinto {
 		return melhorLinha;
 	}
 
-	public static int[][] montarLabirinto() {
+	public int[][] montarLabirinto() {
 		int[][] labirinto = new int[12][12];
 		try {
 			Scanner in = new Scanner(new FileReader("labirinto.txt"));
@@ -165,14 +142,14 @@ public class Labirinto {
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("Arquivo Não Encontrado!");
+			System.out.println("Arquivo Nï¿½o Encontrado!");
 			return null;
 		}
 		printLabirinto(labirinto);
 		return labirinto;
 	}
 
-	public static void printLabirinto(int[][] labirinto) {
+	public void printLabirinto(int[][] labirinto) {
 		System.out.println("Labirinto Carregado:");
 		for (int i = 0; i < labirinto.length; i++) {
 			for (int j = 0; j < labirinto[0].length; j++) {
@@ -186,24 +163,16 @@ public class Labirinto {
 		}
 	}
 
-	public static void printPopulacao(Movimento[][] populacao, int[] aptidoes) {
-		System.out.println("População gerada:");
+	public void printPopulacao(Movimento[][] populacao, int[] aptidoes) {
+		System.out.println("Populaï¿½ï¿½o gerada:");
 		for (int i = 0; i < populacao.length; i++) {
-			System.out.println(i + " " + Arrays.toString(populacao[i]) + " Aptidão = " + aptidoes[i]);
+			System.out.println(i + " " + Arrays.toString(populacao[i]) + " Aptidï¿½o = " + aptidoes[i]);
 
 		}
 	}
 
-	public static void printPopulacao(Movimento[][] populacao) {
-		System.out.println("População gerada:");
-		for (int i = 0; i < populacao.length; i++) {
-			System.out.println(i + " " + Arrays.toString(populacao[i]));
-		}
-	}
-
-	public static Movimento[][] geraPopulacaoInicial(Movimento[][] populacao) {
+	public Movimento[][] geraPopulacaoInicial(Movimento[][] populacao) {
 		System.out.println();
-		Random rng = new Random();
 		for (int i = 0; i < populacao.length; i++) {
 			for (int j = 0; j < populacao.length; j++) {
 				int randomNum = rng.nextInt((4 - 1) + 1) + 1;
@@ -213,7 +182,7 @@ public class Labirinto {
 		return populacao;
 	}
 
-	public static void atribuiAptidao(Movimento[][] populacao, int[][] labirinto, int[] aptidoes) {
+	public void atribuiAptidao(Movimento[][] populacao, int[][] labirinto, int[] aptidoes) {
 		int[] posicaoAtual = { 0, 0 };// inicio labirinto
 
 		ArrayList<int[]> movimentacao = new ArrayList<>();
@@ -224,8 +193,8 @@ public class Labirinto {
 				if (ehValido) {
 					movimentacao.add(new int[] { posicaoAtual[0], posicaoAtual[1] });
 					validaResultado(posicaoAtual, movimentacao, labirinto);
-				} else { //armazena movimento invalido para otimizar a mutação
-					
+				} else { //armazena movimento invalido para otimizar a mutaï¿½ï¿½o
+
 				}
 			}
 			aptidoes[i] = posicaoAtual[0] + posicaoAtual[1];
@@ -233,15 +202,15 @@ public class Labirinto {
 			posicaoAtual[0] = 0;
 			posicaoAtual[1] = 0;
 		}
-		printPopulacao(populacao, aptidoes);
+		//printPopulacao(populacao, aptidoes);
 	}
 
-	private static void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao, int[][] labirinto) {
+	private void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao, int[][] labirinto) {
 		if (posicaoAtual[0] == 11 && posicaoAtual[1] == 11) {
 			movimentacao.add(0, new int[] { 0, 0 });
-			System.out.println("Encontrou a saída do labirinto!");
+			System.out.println("Encontrou a saï¿½da do labirinto!");
 
-			for (int i = 0; i < movimentacao.stream().distinct().collect(Collectors.toSet()).size(); i++) {
+			for (int i = 0; i < new HashSet<>(movimentacao).size(); i++) {
 				if (i % 20 == 0)
 					System.out.println(Arrays.toString(movimentacao.get(i)));
 				else
@@ -254,7 +223,7 @@ public class Labirinto {
 
 	}
 
-	private static void guardaResultado(ArrayList<int[]> movimentacao, int[][] labirinto) {
+	private void guardaResultado(ArrayList<int[]> movimentacao, int[][] labirinto) {
 		int[][] labirintoResultado = labirinto;
 		for (int i = 0; i < movimentacao.size(); i++) {
 			labirintoResultado[movimentacao.get(i)[0]][movimentacao.get(i)[1]] = 2;
@@ -266,7 +235,7 @@ public class Labirinto {
 		gravaLabirintoResultado(labirintoResultado);
 	}
 
-	private static void gravaLabirintoResultado(int[][] labirintoResultado) {
+	private void gravaLabirintoResultado(int[][] labirintoResultado) {
 		BufferedWriter buffWrite;
 		try {
 			buffWrite = new BufferedWriter(new FileWriter("resultado.txt"));
@@ -288,7 +257,7 @@ public class Labirinto {
 		}
 	}
 
-	private static boolean realizaMovimento(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
+	private boolean realizaMovimento(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
 		switch (movimento) {
 		case C: {
 			if (posicaoAtual[0] - 1 >= 0 && labirinto[posicaoAtual[0] - 1][posicaoAtual[1]] != parede) {
