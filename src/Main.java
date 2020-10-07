@@ -2,7 +2,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Genetico genetico = new Genetico(50000, 90, 1 ,12);
+        Genetico genetico = new Genetico(50000, 80, 1 ,12);
 
         int[][] labirinto = genetico.montarLabirinto();
         Movimento[][] populacao = new Movimento[genetico.numMovimentos][genetico.numMovimentos];
