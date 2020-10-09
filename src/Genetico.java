@@ -83,7 +83,7 @@ public class Genetico {
 
 			i = i + 2;
 		}
-		System.out.println();
+
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class Genetico {
 	public void atribuiPrimeiraLinhaPopulacaoIntermediaria(Movimento[][] populacao,
 													Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
 		int melhorLinha = identificaMelhorLinha(aptidoes);
-		aptidoesIntermediarias[0] = melhorLinha;
+		aptidoesIntermediarias[0] = aptidoes[melhorLinha];
 		for (int i = 0; i < populacao[0].length; i++) {
 			populacaoIntermediaria[0][i] = populacao[melhorLinha][i];
 		}
