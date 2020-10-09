@@ -2,7 +2,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Genetico genetico = new Genetico(50000, 80, 1 ,12);
+        Genetico genetico = new Genetico(50000, 90, 1 ,12);
 
         int[][] labirinto = genetico.montarLabirinto();
         Movimento[][] populacao = new Movimento[genetico.numMovimentos][genetico.numMovimentos];
@@ -12,7 +12,7 @@ public class Main {
         genetico.geraPopulacaoInicial(populacao);
 
         for (int geracao = 0; geracao < genetico.numGeracoes; geracao++) {
-            System.out.println("Geração: " + geracao);
+            //System.out.println("Geracao: " + geracao);
 
             genetico.atribuiAptidao(populacao, labirinto, aptidoes);
             genetico.atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes,

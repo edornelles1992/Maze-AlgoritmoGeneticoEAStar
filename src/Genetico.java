@@ -8,14 +8,10 @@ import java.util.stream.Collectors;
 
 public class Genetico {
 
-	int[] E = { 0, 0 };
-	int[] S = { 11, 11 };
-	int numGeracoes = 5000000;
-	int numMovimentos = 100;
-	int melhorValor = 22;
-	int piorValor = 0;
-	int parede = 1;
-	int tamanho = 12;
+	int numGeracoes;
+	int numMovimentos;
+	int parede;
+	int tamanho;
 	Random rng;
 
 	public Genetico(int numGeracoes, int numMovimentos, int parede, int tamanho) {
@@ -113,7 +109,7 @@ public class Genetico {
 		}
 		aptidoes[0] = aptidoes[melhorLinha];
 //		System.out.println();
-//		System.out.println("Iniciado Popula��o intermediaria");
+//		System.out.println("Iniciado Populacao intermediaria");
 //		printPopulacao(populacaoIntermediaria, aptidoesIntermediarias);
 	}
 
@@ -142,7 +138,7 @@ public class Genetico {
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("Arquivo N�o Encontrado!");
+			System.out.println("Arquivo Nao Encontrado!");
 			return null;
 		}
 		printLabirinto(labirinto);
@@ -164,9 +160,9 @@ public class Genetico {
 	}
 
 	public void printPopulacao(Movimento[][] populacao, int[] aptidoes) {
-		System.out.println("Popula��o gerada:");
+		System.out.println("Populacao gerada:");
 		for (int i = 0; i < populacao.length; i++) {
-			System.out.println(i + " " + Arrays.toString(populacao[i]) + " Aptid�o = " + aptidoes[i]);
+			System.out.println(i + " " + Arrays.toString(populacao[i]) + " Aptidao = " + aptidoes[i]);
 
 		}
 	}
@@ -189,12 +185,9 @@ public class Genetico {
 		movimentacao.add(posicaoAtual);
 		for (int i = 0; i < populacao.length; i++) {
 			for (int j = 0; j < populacao.length; j++) {
-				boolean ehValido = realizaMovimento(posicaoAtual, populacao[i][j], labirinto);
-				if (ehValido) {
+				if (checaMovimentoValido(posicaoAtual, populacao[i][j], labirinto)) {
 					movimentacao.add(new int[] { posicaoAtual[0], posicaoAtual[1] });
 					validaResultado(posicaoAtual, movimentacao, labirinto);
-				} else { //armazena movimento invalido para otimizar a muta��o
-
 				}
 			}
 			aptidoes[i] = posicaoAtual[0] + posicaoAtual[1];
@@ -208,7 +201,7 @@ public class Genetico {
 	private void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao, int[][] labirinto) {
 		if (posicaoAtual[0] == 11 && posicaoAtual[1] == 11) {
 			movimentacao.add(0, new int[] { 0, 0 });
-			System.out.println("Encontrou a sa�da do labirinto!");
+			System.out.println("Encontrou a saida do labirinto!");
 
 			for (int i = 0; i < new HashSet<>(movimentacao).size(); i++) {
 				if (i % 20 == 0)
@@ -257,7 +250,7 @@ public class Genetico {
 		}
 	}
 
-	private boolean realizaMovimento(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
+	private boolean checaMovimentoValido(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
 		switch (movimento) {
 		case C: {
 			if (posicaoAtual[0] - 1 >= 0 && labirinto[posicaoAtual[0] - 1][posicaoAtual[1]] != parede) {
