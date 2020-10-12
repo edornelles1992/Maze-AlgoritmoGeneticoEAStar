@@ -22,7 +22,7 @@ public class Genetico {
 		this.rng = new Random();
 	}
 
-	public void mutacao(Movimento[][] populacaoIntermediaria, int[][] labirinto) {
+	public void mutacao(Movimento[][] populacaoIntermediaria) {
 
 		for (int i = 0; i < numMovimentos; i++) {
 			int linha = rng.nextInt(((numMovimentos - 1) - 1) + 1) + 1;
@@ -57,8 +57,7 @@ public class Genetico {
 		}
 	}
 
-	public void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes,
-				   int[] aptidoesIntermediarias) {
+	public void crossOver(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes) {
 
 		int i = 1; // pula primeira linha
 		int pai;
@@ -66,8 +65,8 @@ public class Genetico {
 
 		for (int j = 0; j < (numMovimentos / 2); j++) {
 
-			pai = torneio(populacao, aptidoes);
-			mae = torneio(populacao, aptidoes);
+			pai = torneio(aptidoes);
+			mae = torneio(aptidoes);
 
 			for (int coluna = 0; coluna < (numMovimentos / 2); coluna++) {
 				populacaoIntermediaria[i][coluna] = populacao[pai][coluna];
@@ -87,10 +86,10 @@ public class Genetico {
 	}
 
 	/**
-	 * A linha gerada randomicamente � selecionada com base na que teve melhor
-	 * aptid�o
+	 * A linha gerada randomicamente eh selecionada com base na que teve melhor
+	 * aptidao
 	 */
-	public int torneio(Movimento[][] populacao, int[] aptidoes) {
+	public int torneio(int[] aptidoes) {
 		int linhaUm = rng.nextInt(numMovimentos);
 		int linhaDois = rng.nextInt(numMovimentos);
 
@@ -100,17 +99,13 @@ public class Genetico {
 		return linhaDois;
 	}
 
-	public void atribuiPrimeiraLinhaPopulacaoIntermediaria(Movimento[][] populacao,
-													Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
+	public void atribuiPrimeiraLinhaPopulacaoIntermediaria(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
 		int melhorLinha = identificaMelhorLinha(aptidoes);
 		aptidoesIntermediarias[0] = aptidoes[melhorLinha];
 		for (int i = 0; i < populacao[0].length; i++) {
 			populacaoIntermediaria[0][i] = populacao[melhorLinha][i];
 		}
 		aptidoes[0] = aptidoes[melhorLinha];
-//		System.out.println();
-//		System.out.println("Iniciado Populacao intermediaria");
-//		printPopulacao(populacaoIntermediaria, aptidoesIntermediarias);
 	}
 
 	private int identificaMelhorLinha(int[] aptidoes) {
@@ -138,7 +133,7 @@ public class Genetico {
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("Arquivo Nao Encontrado!");
+			System.out.println("Arquivo nao encontrado!");
 			return null;
 		}
 		printLabirinto(labirinto);
@@ -167,7 +162,7 @@ public class Genetico {
 		}
 	}
 
-	public Movimento[][] geraPopulacaoInicial(Movimento[][] populacao) {
+	public void geraPopulacaoInicial(Movimento[][] populacao) {
 		System.out.println();
 		for (int i = 0; i < populacao.length; i++) {
 			for (int j = 0; j < populacao.length; j++) {
@@ -175,10 +170,9 @@ public class Genetico {
 				populacao[i][j] = Movimento.getMovimentoByValue(randomNum);
 			}
 		}
-		return populacao;
 	}
 
-	public void atribuiAptidao(Movimento[][] populacao, int[][] labirinto, int[] aptidoes) {
+	public void atribuiAptidao(Movimento[][] populacao, int[][] labirinto, int[] aptidoes, int option) {
 		int[] posicaoAtual = { 0, 0 };// inicio labirinto
 
 		ArrayList<int[]> movimentacao = new ArrayList<>();
@@ -195,7 +189,10 @@ public class Genetico {
 			posicaoAtual[0] = 0;
 			posicaoAtual[1] = 0;
 		}
-		//printPopulacao(populacao, aptidoes);
+
+		if (option == 2) {
+			printPopulacao(populacao, aptidoes);
+		}
 	}
 
 	private void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao, int[][] labirinto) {
@@ -217,21 +214,20 @@ public class Genetico {
 	}
 
 	private void guardaResultado(ArrayList<int[]> movimentacao, int[][] labirinto) {
-		int[][] labirintoResultado = labirinto;
 		for (int i = 0; i < movimentacao.size(); i++) {
-			labirintoResultado[movimentacao.get(i)[0]][movimentacao.get(i)[1]] = 2;
+			labirinto[movimentacao.get(i)[0]][movimentacao.get(i)[1]] = 2;
 		}
 
 		System.out.println();
 		System.out.println("Labirinto Resultado!");
-		printLabirinto(labirintoResultado);
-		gravaLabirintoResultado(labirintoResultado);
+		printLabirinto(labirinto);
+		gravaLabirintoResultado(labirinto);
 	}
 
 	private void gravaLabirintoResultado(int[][] labirintoResultado) {
 		BufferedWriter buffWrite;
 		try {
-			buffWrite = new BufferedWriter(new FileWriter("resultado.txt"));
+			buffWrite = new BufferedWriter(new FileWriter("resultadoGenetico.txt"));
 
 			for (int i = 0; i < labirintoResultado.length; i++) {
 				for (int j = 0; j < labirintoResultado.length; j++) {

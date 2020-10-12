@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class AStar {
+public class AEstrela {
 	private ArrayList<Nodo> conexoes;
 	private Nodo[][] labirinto;
 	private int[][] labirintoArquivo;
@@ -16,7 +16,7 @@ public class AStar {
 	private Nodo noFinal;
 	private Nodo noCorrente;
 
-	public AStar() {
+	public AEstrela() {
 		conexoes = new ArrayList<>();
 		labirinto = new Nodo[12][12]; // lista aberta
 		labirintoArquivo = montarLabirinto();
@@ -48,9 +48,9 @@ public class AStar {
 	}
 
 	public String encontraCaminho() {
-		Nodo aux = null;
+		Nodo aux;
 		String caminho = "";
-		int distancia = 0;
+		int distancia;
 		while (noFinal != noCorrente) {
 			noCorrente.setVisitado(true);
 			conexoes.remove(noCorrente);
@@ -73,7 +73,7 @@ public class AStar {
 	private Nodo proximoNo() {
 		Nodo prox;
 		int atual;
-		int aux = 0;
+		int aux;
 
 		prox = conexoes.get(0);
 		atual = heuristica(prox, noFinal);
@@ -200,9 +200,4 @@ public class AStar {
 		}
 	}
 
-	public static void main(String args[]) {
-		AStar algoritmo = new AStar();
-		algoritmo.carregaDados();
-		System.out.println(algoritmo.encontraCaminho());
-	}
 }
