@@ -30,18 +30,19 @@ public class Main {
         int[] aptidoesIntermediarias = new int[populacao.length];
         genetico.geraPopulacaoInicial(populacao);
 
-        for (int geracao = 0; geracao < genetico.numGeracoes; geracao++) {
+        int geracao;
+        for (geracao = 0; geracao < genetico.numGeracoes; geracao++) {
             genetico.atribuiAptidao(populacao, labirinto, aptidoes, option);
             genetico.atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes,
                     aptidoesIntermediarias);
             genetico.crossOver(populacao, populacaoIntermediaria, aptidoes);
 
             genetico.mutacao(populacaoIntermediaria);
-
+    		
             populacao = populacaoIntermediaria;
             aptidoes = aptidoesIntermediarias;
         }
-
+        System.out.println(geracao + " Gerações");
         System.out.println("Solucao final nao encontrada para " + genetico.numGeracoes + " geracoes e " + genetico.numMovimentos
                 + " movimentos por cromossomo");
     }

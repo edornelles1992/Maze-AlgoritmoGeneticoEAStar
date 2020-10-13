@@ -24,7 +24,7 @@ public class Genetico {
 
 	public void mutacao(Movimento[][] populacaoIntermediaria) {
 
-		for (int i = 0; i < numMovimentos; i++) {
+		for (int i = 0; i < numMovimentos * 3; i++) {
 			int linha = rng.nextInt(((numMovimentos - 1) - 1) + 1) + 1;
 			int coluna = rng.nextInt(numMovimentos);
 
@@ -174,25 +174,39 @@ public class Genetico {
 
 	public void atribuiAptidao(Movimento[][] populacao, int[][] labirinto, int[] aptidoes, int option) {
 		int[] posicaoAtual = { 0, 0 };// inicio labirinto
+		int[] posicaoAux = { 0, 0 };
 
 		ArrayList<int[]> movimentacao = new ArrayList<>();
 		movimentacao.add(posicaoAtual);
 		for (int i = 0; i < populacao.length; i++) {
+			posicaoAux = new int[] { 0, 0 };
+			posicaoAtual = new int[] { 0, 0 };
 			for (int j = 0; j < populacao.length; j++) {
-				if (checaMovimentoValido(posicaoAtual, populacao[i][j], labirinto)) {
-					movimentacao.add(new int[] { posicaoAtual[0], posicaoAtual[1] });
+				posicaoAux = realizaMovimento(posicaoAtual, populacao[i][j], labirinto);
+				if (!posicaoAux.equals(posicaoAtual) && !movimentoJaRealizado(posicaoAux, movimentacao)) {
+					posicaoAtual = posicaoAux;
+					movimentacao.add(new int[] { posicaoAtual[0], posicaoAtual[1] });	
 					validaResultado(posicaoAtual, movimentacao, labirinto);
+					
 				}
-			}
-			aptidoes[i] = posicaoAtual[0] + posicaoAtual[1];
 
-			posicaoAtual[0] = 0;
-			posicaoAtual[1] = 0;
+			}
+			movimentacao = new ArrayList<>();
+			aptidoes[i] = posicaoAux[0] + posicaoAux[1];
 		}
 
 		if (option == 2) {
 			printPopulacao(populacao, aptidoes);
 		}
+	}
+	
+	public boolean movimentoJaRealizado(int[] posicaoAtual, ArrayList<int[]> movimentacao) {
+		for (int[] mov : movimentacao) {
+			if (mov[0] == posicaoAtual[0] && mov[1] == posicaoAtual[1]) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void validaResultado(int[] posicaoAtual, ArrayList<int[]> movimentacao, int[][] labirinto) {
@@ -246,39 +260,44 @@ public class Genetico {
 		}
 	}
 
-	private boolean checaMovimentoValido(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
+	private int[] realizaMovimento(int[] posicaoAtual, Movimento movimento, int[][] labirinto) {
+		int[] posicaoNova = { 0, 0 };
 		switch (movimento) {
 		case C: {
 			if (posicaoAtual[0] - 1 >= 0 && labirinto[posicaoAtual[0] - 1][posicaoAtual[1]] != parede) {
-				posicaoAtual[0] = posicaoAtual[0] - 1;
-				return true;
+				posicaoNova[0] = posicaoAtual[0] - 1;
+				posicaoNova[1] = posicaoAtual[1];
+				return posicaoNova;
 			}
 		}
 			break;
 		case B: {
 			if (posicaoAtual[0] + 1 < tamanho && labirinto[posicaoAtual[0] + 1][posicaoAtual[1]] != parede) {
-				posicaoAtual[0] = posicaoAtual[0] + 1;
-				return true;
+				posicaoNova[0] = posicaoAtual[0] + 1;
+				posicaoNova[1] = posicaoAtual[1];
+				return posicaoNova;
 			}
 		}
 			break;
 		case E: {
 			if (posicaoAtual[1] - 1 >= 0 && labirinto[posicaoAtual[0]][posicaoAtual[1] - 1] != parede) {
-				posicaoAtual[1] = posicaoAtual[1] - 1;
-				return true;
+				posicaoNova[0] = posicaoAtual[0];
+				posicaoNova[1] = posicaoAtual[1] - 1;
+				return posicaoNova;
 			}
 		}
 			break;
 		case D: {
 			if (posicaoAtual[1] + 1 < tamanho && labirinto[posicaoAtual[0]][posicaoAtual[1] + 1] != parede) {
-				posicaoAtual[1] = posicaoAtual[1] + 1;
-				return true;
+				posicaoNova[0] = posicaoAtual[0];
+				posicaoNova[1] = posicaoAtual[1] + 1;
+				return posicaoNova;
 			}
 		}
 			break;
 		default:
-			return false;
+			return posicaoAtual;
 		}
-		return false;
+		return posicaoAtual;
 	}
 }
