@@ -31,43 +31,32 @@ public class AEstrela {
 
 		noInicial = containsNo(labirinto, labirinto[0][0]);
 		noFinal = containsNo(labirinto, labirinto[11][11]);
-		noFinal.setPeso(22);
-		labirinto[0][0].setVisitado(true); // inicial ja é visitado 
+		labirinto[0][0].setVisitado(true); // inicial ja é visitado
 		noCorrente = noInicial;
-	}
-
-	private Nodo containsNo(Nodo[][] nodos, Nodo nodoAlvo) {
-		for (Nodo[] linhaNodos : nodos) {
-			for (Nodo nodoAtual : linhaNodos) {
-				if (nodoAtual == nodoAlvo) {
-					return nodoAtual;
-				}
-			}
-		}
-		return null;
 	}
 
 	public String encontraCaminho() {
 		Nodo aux;
 		String caminho = "";
-		int distancia;
 		while (noFinal != noCorrente) {
 			noCorrente.setVisitado(true);
 			conexoes.remove(noCorrente);
 			insereconexoes(noCorrente);
-			noCorrente = proximoNo();
-			if (noCorrente == null)
-				return "Nao Existe caminho.";
+			try {
+				noCorrente = proximoNo();
+			} catch (Exception e) {
+				//qualquer erro ocorrido signifca que não tem caminho valido.
+				return "Nao Existe caminho valido para esse labirinto.";
+			}
 		}
 
 		aux = noFinal;
-		distancia = noFinal.getPeso();
 		while (aux != null) {
 			caminho = " (" + aux.getLinha() + "," + aux.getColuna() + ") " + caminho;
 			aux = aux.getAnt();
 		}
 		gravaLabirintoResultado(noFinal);
-		return "Caminho: " + caminho + "  Distancia: " + distancia;
+		return "Caminho: " + caminho;
 	}
 
 	private Nodo proximoNo() {
@@ -127,12 +116,11 @@ public class AEstrela {
 	private void atribuiPeso(Nodo noCorrente, Nodo nodo, int novoPeso) {
 		if (nodo != null && labirintoArquivo[nodo.linha][nodo.coluna] == 0) {
 			if (!nodo.isVisitado()) {
-				nodo.setPeso(novoPeso);
 				nodo.setAnt(noCorrente);
 				conexoes.add(nodo);
 				labirinto[nodo.linha][nodo.coluna].setVisitado(true);
 			}
-		} 
+		}
 	}
 
 	public int[][] montarLabirinto() {
@@ -171,7 +159,7 @@ public class AEstrela {
 			System.out.println();
 		}
 	}
-	
+
 	private void gravaLabirintoResultado(Nodo nodo) {
 		BufferedWriter buffWrite;
 		try {
@@ -182,7 +170,7 @@ public class AEstrela {
 				labirintoArquivo[aux.linha][aux.coluna] = 2;
 				aux = aux.getAnt();
 			}
-			
+
 			for (int i = 0; i < labirintoArquivo.length; i++) {
 				for (int j = 0; j < labirintoArquivo.length; j++) {
 					if (labirintoArquivo[i][j] == 2) {
@@ -198,6 +186,17 @@ public class AEstrela {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private Nodo containsNo(Nodo[][] nodos, Nodo nodoAlvo) {
+		for (Nodo[] linhaNodos : nodos) {
+			for (Nodo nodoAtual : linhaNodos) {
+				if (nodoAtual == nodoAlvo) {
+					return nodoAtual;
+				}
+			}
+		}
+		return null;
 	}
 
 }

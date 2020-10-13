@@ -1,7 +1,6 @@
 
 public class Nodo {
 
-	private int peso;
 	public int linha;
 	public int coluna;
 	private Nodo ant;
@@ -10,7 +9,6 @@ public class Nodo {
 	public Nodo(int linha, int coluna) {
 		this.linha = linha;
 		this.coluna = coluna;
-		peso = 0;
 		ant = null;
 		visitado = false;
 	}
@@ -31,10 +29,6 @@ public class Nodo {
 		this.coluna = coluna;
 	}
 
-	public void setPeso(int peso) {
-		this.peso = peso;
-	}
-
 	public void setAnt(Nodo n) {
 		ant = n;
 	}
@@ -43,9 +37,6 @@ public class Nodo {
 		return ant;
 	}
 
-	public int getPeso() {
-		return peso;
-	}
 
 	public boolean isVisitado() {
 		return visitado;

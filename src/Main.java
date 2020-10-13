@@ -21,7 +21,7 @@ public class Main {
     }
 
     public static void executarGenetico(int option) {
-        Genetico genetico = new Genetico(50000, 100, 1 ,12);
+        Genetico genetico = new Genetico(50000, 80, 1 ,12);
 
         int[][] labirinto = genetico.montarLabirinto();
         Movimento[][] populacao = new Movimento[genetico.numMovimentos][genetico.numMovimentos];
