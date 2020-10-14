@@ -4,7 +4,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Genetico {
 
@@ -22,9 +21,9 @@ public class Genetico {
 		this.rng = new Random();
 	}
 
-	public void mutacao(Movimento[][] populacaoIntermediaria) {
+	public void mutacao(Movimento[][] populacaoIntermediaria, int taxaMutacao) {
 
-		for (int i = 0; i < numMovimentos * 3; i++) {
+		for (int i = 0; i < numMovimentos * taxaMutacao; i++) {
 			int linha = rng.nextInt(((numMovimentos - 1) - 1) + 1) + 1;
 			int coluna = rng.nextInt(numMovimentos);
 
@@ -99,13 +98,17 @@ public class Genetico {
 		return linhaDois;
 	}
 
-	public void atribuiPrimeiraLinhaPopulacaoIntermediaria(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias) {
+	public void atribuiPrimeiraLinhaPopulacaoIntermediaria(Movimento[][] populacao, Movimento[][] populacaoIntermediaria, int[] aptidoes, int[] aptidoesIntermediarias,
+														   int option) {
 		int melhorLinha = identificaMelhorLinha(aptidoes);
 		aptidoesIntermediarias[0] = aptidoes[melhorLinha];
 		for (int i = 0; i < populacao[0].length; i++) {
 			populacaoIntermediaria[0][i] = populacao[melhorLinha][i];
 		}
 		aptidoes[0] = aptidoes[melhorLinha];
+		if (option == 1) {
+			System.out.println("Melhor cromossomo: " + aptidoes[0] + " " + Arrays.toString(populacaoIntermediaria[0]));
+		}
 	}
 
 	private int identificaMelhorLinha(int[] aptidoes) {
@@ -174,7 +177,7 @@ public class Genetico {
 
 	public void atribuiAptidao(Movimento[][] populacao, int[][] labirinto, int[] aptidoes, int option) {
 		int[] posicaoAtual = { 0, 0 };// inicio labirinto
-		int[] posicaoAux = { 0, 0 };
+		int[] posicaoAux;
 
 		ArrayList<int[]> movimentacao = new ArrayList<>();
 		movimentacao.add(posicaoAtual);

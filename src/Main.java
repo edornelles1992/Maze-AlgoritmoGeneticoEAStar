@@ -34,10 +34,10 @@ public class Main {
         for (geracao = 0; geracao < genetico.numGeracoes; geracao++) {
             genetico.atribuiAptidao(populacao, labirinto, aptidoes, option);
             genetico.atribuiPrimeiraLinhaPopulacaoIntermediaria(populacao, populacaoIntermediaria, aptidoes,
-                    aptidoesIntermediarias);
-            genetico.crossOver(populacao, populacaoIntermediaria, aptidoes);
+                    aptidoesIntermediarias, option);
 
-            genetico.mutacao(populacaoIntermediaria);
+            genetico.crossOver(populacao, populacaoIntermediaria, aptidoes);
+            genetico.mutacao(populacaoIntermediaria, 3);
     		
             populacao = populacaoIntermediaria;
             aptidoes = aptidoesIntermediarias;
